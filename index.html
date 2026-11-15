@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nuestra Boda | Fidel & Daniela</title>
+
+  <!-- Meta etiquetas Open Graph para vista previa elegante en WhatsApp -->
+  <meta property="og:title" content="¡Nos Casamos! Fidel & Daniela 💍" />
+  <meta property="og:description" content="Sábado 12 de diciembre de 2026 • Sucre, Bolivia. Toca el sello para abrir nuestra invitación." />
+  <meta property="og:type" content="website" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Great+Vibes&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS & Canvas Confetti -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold: {
+              light: '#E5C687',
+              DEFAULT: '#B88A44',
+              dark: '#8C6324',
+            },
+            olive: {
+              DEFAULT: '#2E3B2B',
+              light: '#4A5D45',
+            },
+            navy: '#0F1F38',
+            ivory: '#FDFBF7',
+            cream: '#F7F2E7',
+          },
+          fontFamily: {
+            script: ['"Great Vibes"', 'cursive'],
+            serif: ['"Cormorant Garamond"', 'serif'],
+            display: ['"Cinzel"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #FDFBF7;
+      color: #2E3B2B;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Textura sutil de papel fino */
+    .paper-texture {
+      background-color: #FFFFFF;
+      background-image: radial-gradient(rgba(184, 138, 68, 0.08) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+
+    /* Marco doble dorado elegante */
+    .gold-frame {
+      border: 1.5px solid #B88A44;
+      position: relative;
+      width: 100%;
+    }
+    .gold-frame::after {
+      content: '';
+      position: absolute;
+      inset: 6px;
+      border: 0.5px solid rgba(184, 138, 68, 0.5);
+      pointer-events: none;
+    }
+
+    /* === EFECTO DE APERTURA TIPO PUERTA DOBLE CON sobre.jpg === */
+    #sobre-overlay {
+      /* Fondo cálido bajito con viñeta para que el sobre marfil resalte sin perderse */
+      background: radial-gradient(circle at center, #EAE2D5 0%, #D5C9B6 100%);
+      perspective: 1800px;
+    }
+
+    /* Contenedor del sobre completo con proporción fiel y sombra realista */
+    .tarjeta-sobre-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 780px;
+      aspect-ratio: 16 / 10;
+      max-height: 72vh;
+      box-shadow: 0 28px 65px rgba(46, 59, 43, 0.28), 0 8px 20px rgba(0, 0, 0, 0.14);
+      border-radius: 12px;
+      border: 1.5px solid rgba(184, 138, 68, 0.55);
+      overflow: hidden;
+      background-color: #F4ECE0;
+    }
+
+    /* En celulares verticales hacemos el sobre más alto para que se aprecie grande y nítido */
+    @media (max-width: 640px) {
+      .tarjeta-sobre-wrapper {
+        aspect-ratio: 4 / 3.3;
+        width: 94%;
+      }
+    }
+
+    /* Hoja Izquierda del sobre */
+    .sobre-hoja-izquierda {
+      position: absolute;
+      inset: 0;
+      background-image: url('sobre.jpg');
+      background-size: 100% 100%;
+      background-position: center;
+      clip-path: polygon(0 0, 50.2% 0, 50.2% 100%, 0 100%);
+      transform-origin: left center;
+      transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.9s ease;
+    }
+
+    /* Hoja Derecha del sobre */
+    .sobre-hoja-derecha {
+      position: absolute;
+      inset: 0;
+      background-image: url('sobre.jpg');
+      background-size: 100% 100%;
+      background-position: center;
+      clip-path: polygon(49.8% 0, 100% 0, 100% 100%, 49.8% 100%);
+      transform-origin: right center;
+      transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.9s ease;
+    }
+
+    /* Animación al abrir las dos puertas del sobre */
+    .sobre-abierto .sobre-hoja-izquierda {
+      transform: rotateY(-105deg) translateX(-15%);
+      opacity: 0;
+    }
+    .sobre-abierto .sobre-hoja-derecha {
+      transform: rotateY(105deg) translateX(15%);
+      opacity: 0;
+    }
+    .sobre-abierto .contenido-sobre {
+      transform: scale(1.15);
+      opacity: 0;
+      transition: transform 0.6s ease, opacity 0.5s ease;
+    }
+
+    /* Sello de lacre dorado pulsante justo en el medallón central */
+    @keyframes latidoSello {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(184, 138, 68, 0.65); }
+      50% { transform: scale(1.06); box-shadow: 0 0 0 16px rgba(184, 138, 68, 0); }
+    }
+    .sello-lacre {
+      background: radial-gradient(circle at 30% 30%, #DFBA74, #B88A44 65%, #7E571B 100%);
+      animation: latidoSello 2.4s infinite ease-in-out;
+    }
+
+    /* Animaciones al hacer scroll */
+    .revelar {
+      opacity: 0;
+      transform: translateY(32px) scale(0.98);
+      transition: opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1), transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .revelar.activo {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    @keyframes flotar {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-7px) rotate(1.5deg); }
+    }
+    .flotar-suave {
+      animation: flotar 4.5s ease-in-out infinite;
+    }
+
+    @keyframes girarDisco {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .girando {
+      animation: girarDisco 8s linear infinite;
+    }
+
+    /* Línea vertical del cronograma */
+    .timeline-line {
+      position: relative;
+    }
+    .timeline-line::before {
+      content: '';
+      position: absolute;
+      left: 72px;
+      top: 14px;
+      bottom: 14px;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, #B88A44 10%, #B88A44 90%, transparent);
+    }
+    @media (min-width: 640px) {
+      .timeline-line::before {
+        left: 96px;
+      }
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-gold/20 overflow-hidden" id="cuerpo">
+
+  <!-- AUDIO DE FONDO -->
+  <audio id="musica-fondo" loop preload="auto">
+    <source src="https://cdn.pixabay.com/download/audio/2022/02/07/audio_182201586b.mp3?filename=wedding-love-story-11148.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- BOTÓN FLOTANTE DE MÚSICA -->
+  <button id="btn-musica" onclick="toggleMusica()" title="Pausar / Reproducir música"
+          class="hidden fixed bottom-5 right-5 z-40 w-12 h-12 rounded-full bg-gold text-white shadow-xl flex items-center justify-center border-2 border-white hover:bg-gold-dark transition cursor-pointer">
+    <svg id="icono-musica" class="w-5 h-5 girando" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"/>
+    </svg>
+  </button>
+
+  <!-- =========================================================
+       PANTALLA 1: SOBRE COMPLETO SOBRE FONDO CONTRASTANTE SUAVE
+       ========================================================= -->
+  <div id="sobre-overlay" onclick="abrirSobre()" class="fixed inset-0 z-50 flex flex-col items-center justify-center p-3 sm:p-6 transition-opacity duration-700 cursor-pointer">
+    
+    <!-- Encabezado superior fuera del sobre para no tapar los relieves -->
+    <div class="contenido-sobre text-center mb-4 sm:mb-5">
+      <p class="font-display text-[11px] sm:text-xs tracking-[0.32em] text-olive uppercase font-semibold">Nuestra Boda</p>
+      <h2 class="font-script text-4xl sm:text-5xl text-navy mt-0.5">Fidel <span class="text-gold">&amp;</span> Daniela</h2>
+      <p class="font-serif italic text-base sm:text-lg text-olive">Sábado, 12 de Diciembre de 2026</p>
+    </div>
+
+    <!-- Tarjeta del Sobre Completo (Se abre hacia izquierda y derecha) -->
+    <div class="tarjeta-sobre-wrapper flex items-center justify-center">
+      <div class="sobre-hoja-izquierda"></div>
+      <div class="sobre-hoja-derecha"></div>
+
+      <!-- Sello dorado posicionado justo en el centro del medallón -->
+      <div class="contenido-sobre relative z-20 flex flex-col items-center justify-center">
+        <button type="button" aria-label="Abrir invitación"
+                class="sello-lacre w-20 h-20 sm:w-24 sm:h-24 rounded-full border-2 border-gold-light flex flex-col items-center justify-center text-white shadow-xl cursor-pointer select-none">
+          <span class="font-display text-lg sm:text-xl font-bold tracking-wider">F&amp;D</span>
+          <span class="font-display text-[8px] sm:text-[9px] tracking-[0.2em] uppercase mt-0.5">Abrir</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Indicación inferior limpia -->
+    <div class="contenido-sobre mt-5 text-center">
+      <span class="inline-block px-5 py-1.5 rounded-full bg-white/80 border border-gold/40 text-olive font-serif italic text-sm sm:text-base shadow-xs animate-pulse">
+        Toca el sello dorado para abrir la invitación
+      </span>
+    </div>
+
+  </div>
+
+  <!-- =========================================================
+       PANTALLA 2: INVITACIÓN COMPLETA A ANCHO TOTAL
+       ========================================================= -->
+  <main class="w-full min-h-screen paper-texture p-2.5 sm:p-5 md:p-8">
+    <div class="gold-frame px-4 py-12 sm:px-10 sm:py-16 md:px-16 relative overflow-hidden">
+
+      <!-- ORNAMENTO FLORAL ESQUINA SUPERIOR IZQUIERDA -->
+      <svg class="w-32 h-32 sm:w-48 sm:h-48 text-gold/30 absolute -top-2 -left-2 pointer-events-none flotar-suave" viewBox="0 0 200 200" fill="none">
+        <path d="M10 180C15 100 60 40 170 12" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M40 120C20 100 25 75 45 70C55 90 50 110 40 120Z" fill="#4A5D45" fill-opacity="0.22"/>
+        <path d="M75 80C55 60 60 35 80 30C90 50 85 70 75 80Z" fill="#4A5D45" fill-opacity="0.22"/>
+        <path d="M115 48C100 30 105 12 125 10C132 28 125 42 115 48Z" fill="#B88A44" fill-opacity="0.25"/>
+        <circle cx="52" cy="52" r="14" stroke="#B88A44" stroke-width="1.2" fill="#FDFBF7"/>
+        <circle cx="52" cy="52" r="7" stroke="#B88A44" stroke-width="1"/>
+      </svg>
+
+      <!-- ORNAMENTO FLORAL ESQUINA INFERIOR DERECHA -->
+      <svg class="w-32 h-32 sm:w-48 sm:h-48 text-gold/30 absolute -bottom-2 -right-2 rotate-180 pointer-events-none flotar-suave" viewBox="0 0 200 200" fill="none">
+        <path d="M10 180C15 100 60 40 170 12" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M40 120C20 100 25 75 45 70C55 90 50 110 40 120Z" fill="#4A5D45" fill-opacity="0.22"/>
+        <path d="M75 80C55 60 60 35 80 30C90 50 85 70 75 80Z" fill="#4A5D45" fill-opacity="0.22"/>
+        <circle cx="52" cy="52" r="14" stroke="#B88A44" stroke-width="1.2" fill="#FDFBF7"/>
+        <circle cx="52" cy="52" r="7" stroke="#B88A44" stroke-width="1"/>
+      </svg>
+
+      <div class="w-full max-w-4xl mx-auto relative z-10">
+
+        <!-- 1. PORTADA Y VERSÍCULO -->
+        <section class="text-center revelar">
+          <div class="inline-block px-5 py-1.5 rounded-full border border-gold/40 bg-ivory mb-5">
+            <span class="font-display text-[10px] sm:text-xs tracking-[0.28em] text-gold uppercase font-semibold">¡Nos Casamos!</span>
+          </div>
+
+          <div class="mb-4">
+            <span class="font-display text-5xl sm:text-6xl font-bold text-navy">F</span>
+            <span class="font-script text-3xl sm:text-4xl text-gold mx-1">&amp;</span>
+            <span class="font-display text-5xl sm:text-6xl font-bold text-navy">D</span>
+          </div>
+
+          <blockquote class="font-serif italic text-xl sm:text-2xl md:text-3xl text-olive leading-relaxed max-w-2xl mx-auto px-2">
+            “El amor y compromiso es nuestra promesa para Dios y donde está Dios no falta nada.”
+          </blockquote>
+
+          <div class="flex items-center justify-center gap-3 my-5 text-gold">
+            <span class="h-[1px] w-14 bg-gold/50"></span>
+            <span class="text-sm">♥</span>
+            <span class="h-[1px] w-14 bg-gold/50"></span>
+          </div>
+
+          <p class="font-display text-xs sm:text-sm tracking-[0.24em] text-olive uppercase font-semibold">
+            Con la bendición de Dios<br>y de nuestros padres:
+          </p>
+
+          <!-- Padres -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 pt-3 text-center relative max-w-2xl mx-auto">
+            <div class="space-y-1.5">
+              <div class="text-gold text-xl leading-none">✝</div>
+              <p class="font-serif italic font-semibold text-lg sm:text-xl text-olive">Candido Pinto Coronado</p>
+              <p class="font-serif italic font-semibold text-lg sm:text-xl text-olive">Iginia Zarate</p>
+            </div>
+
+            <div class="hidden md:block absolute left-1/2 top-2 bottom-2 w-[1px] bg-gold/60 -translate-x-1/2"></div>
+            <div class="md:hidden w-28 h-[1px] bg-gold/50 mx-auto"></div>
+
+            <div class="space-y-1.5 md:pt-5">
+              <p class="font-serif italic font-semibold text-lg sm:text-xl text-olive">Ceferino Víctor Tellez Mita</p>
+              <p class="font-serif italic font-semibold text-lg sm:text-xl text-olive">Virginia Rodriguez Flores</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. NOMBRES DE LOS NOVIOS -->
+        <section class="text-center mt-14 sm:mt-16 revelar">
+          <p class="font-display text-xs sm:text-sm tracking-[0.22em] text-olive uppercase">
+            Participan a usted(es) el enlace matrimonial<br>de sus hijos:
+          </p>
+
+          <div class="my-8">
+            <h1 class="font-script text-7xl sm:text-8xl md:text-9xl text-gold drop-shadow-sm">Fidel</h1>
+            
+            <!-- Anillos entrelazados con cruz -->
+            <div class="flex items-center justify-center gap-4 my-2 flotar-suave">
+              <span class="h-[1px] w-16 sm:w-28 bg-gradient-to-r from-transparent to-gold"></span>
+              <svg class="w-14 h-14 sm:w-16 sm:h-16 text-gold" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M32 8V20M27 13H37" stroke-linecap="round"/>
+                <circle cx="26" cy="36" r="11"/>
+                <circle cx="38" cy="36" r="11"/>
+              </svg>
+              <span class="h-[1px] w-16 sm:w-28 bg-gradient-to-l from-transparent to-gold"></span>
+            </div>
+
+            <h1 class="font-script text-7xl sm:text-8xl md:text-9xl text-gold drop-shadow-sm">Daniela</h1>
+          </div>
+        </section>
+
+        <!-- 3. FECHA DESTACADA Y CUENTA REGRESIVA EN VIVO -->
+        <section class="my-12 py-8 px-4 sm:px-8 bg-ivory border border-gold/40 rounded-2xl text-center shadow-sm revelar">
+          <p class="font-display text-xs sm:text-sm tracking-[0.25em] text-olive uppercase">Reserva la fecha</p>
+          
+          <div class="flex items-center justify-center gap-3 sm:gap-5 my-3">
+            <span class="font-display text-sm sm:text-lg tracking-widest text-olive border-y border-gold/50 py-1 px-3 uppercase">Sábado</span>
+            <span class="font-display text-5xl sm:text-6xl font-bold text-gold">12</span>
+            <span class="font-display text-sm sm:text-lg tracking-widest text-olive border-y border-gold/50 py-1 px-3 uppercase">Diciembre</span>
+          </div>
+          <p class="font-display text-lg sm:text-xl font-bold text-navy tracking-[0.2em]">2026</p>
+
+          <p class="font-serif italic text-base sm:text-lg text-olive/80 mt-4 mb-5">Faltan tan solo:</p>
+
+          <div class="grid grid-cols-4 gap-2 sm:gap-4 max-w-xl mx-auto text-center" id="countdown">
+            <div class="bg-white p-3 sm:p-5 rounded-xl border border-gold/30 shadow-xs">
+              <span id="dias" class="block font-display text-2xl sm:text-4xl font-bold text-navy">00</span>
+              <span class="text-[10px] sm:text-xs uppercase tracking-wider text-gold font-semibold">Días</span>
+            </div>
+            <div class="bg-white p-3 sm:p-5 rounded-xl border border-gold/30 shadow-xs">
+              <span id="horas" class="block font-display text-2xl sm:text-4xl font-bold text-navy">00</span>
+              <span class="text-[10px] sm:text-xs uppercase tracking-wider text-gold font-semibold">Horas</span>
+            </div>
+            <div class="bg-white p-3 sm:p-5 rounded-xl border border-gold/30 shadow-xs">
+              <span id="minutos" class="block font-display text-2xl sm:text-4xl font-bold text-navy">00</span>
+              <span class="text-[10px] sm:text-xs uppercase tracking-wider text-gold font-semibold">Min</span>
+            </div>
+            <div class="bg-white p-3 sm:p-5 rounded-xl border border-gold/30 shadow-xs">
+              <span id="segundos" class="block font-display text-2xl sm:text-4xl font-bold text-navy">00</span>
+              <span class="text-[10px] sm:text-xs uppercase tracking-wider text-gold font-semibold">Seg</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. CEREMONIA Y RECEPCIÓN (CON MAPAS) -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 text-center my-12 revelar">
+          <!-- Ceremonia Religiosa -->
+          <div class="p-6 sm:p-8 border border-gold/40 rounded-2xl bg-white shadow-xs hover:shadow-md transition flex flex-col justify-between">
+            <div>
+              <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gold/10 flex items-center justify-center text-gold flotar-suave">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v3m-2-1h4M6 21V10l6-4 6 4v11M9 21v-5a3 3 0 016 0v5"/>
+                </svg>
+              </div>
+              <h2 class="font-display text-sm sm:text-base tracking-[0.2em] text-gold uppercase font-bold">Ceremonia Religiosa</h2>
+              <p class="font-serif text-lg sm:text-xl text-olive mt-3">
+                Sábado 12 de diciembre • <strong>15:00 p.m.</strong>
+              </p>
+              <p class="font-serif font-semibold text-2xl text-navy mt-1">Parroquia “La Recoleta”</p>
+              <p class="font-serif italic text-base text-olive/80 mt-1">Sucre, Bolivia</p>
+            </div>
+            
+            <div class="mt-6">
+              <a href="https://www.google.com/maps/search/?api=1&query=Parroquia+La+Recoleta+Sucre+Bolivia" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3 bg-gold hover:bg-gold-dark text-white transition rounded-full font-display text-xs tracking-widest uppercase shadow-sm">
+                <span>📍 Ver Ubicación</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Recepción Social -->
+          <div class="p-6 sm:p-8 border border-gold/40 rounded-2xl bg-white shadow-xs hover:shadow-md transition flex flex-col justify-between">
+            <div>
+              <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gold/10 flex items-center justify-center text-gold flotar-suave">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 21h8m-4-4v4m-5-9a5 5 0 0010 0V4H7v8z"/>
+                </svg>
+              </div>
+              <h2 class="font-display text-sm sm:text-base tracking-[0.2em] text-gold uppercase font-bold">Recepción Social</h2>
+              <p class="font-serif text-lg text-olive mt-3">Después de la ceremonia invitamos al</p>
+              <p class="font-display font-bold text-xl sm:text-2xl text-navy mt-1">Salón de Eventos “ESTRADA”</p>
+              <p class="font-serif text-lg text-olive mt-1">Calle Brasil #26, Avenida Canadá</p>
+              <p class="font-serif italic text-base text-olive/80">Recepción desde las 18:30 hrs.</p>
+            </div>
+
+            <div class="mt-6">
+              <a href="https://www.google.com/maps/search/?api=1&query=Salon+de+eventos+Estrada+Calle+Brasil+Sucre+Bolivia" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3 bg-gold hover:bg-gold-dark text-white transition rounded-full font-display text-xs tracking-widest uppercase shadow-sm">
+                <span>📍 Ver Ubicación</span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. PADRINOS -->
+        <section class="text-center my-12 pt-8 border-t border-gold/30 revelar">
+          <div class="text-gold text-base mb-5">♥</div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 relative max-w-2xl mx-auto">
+            <div>
+              <div class="text-gold text-xl mb-1">✝</div>
+              <h3 class="font-display text-xs sm:text-sm tracking-[0.18em] text-olive uppercase font-semibold">
+                Padrinos de Religioso
+              </h3>
+              <p class="font-serif italic font-semibold text-lg sm:text-xl text-navy mt-2">Álvaro Caba Choque</p>
+              <p class="font-serif italic font-semibold text-lg sm:text-xl text-navy">Gabriela Lascano Contreras</p>
+            </div>
+
+            <div class="hidden md:block absolute left-1/2 top-2 bottom-2 w-[1px] bg-gold/50 -translate-x-1/2"></div>
+
+            <div>
+              <div class="text-gold text-xl mb-1">🎗️</div>
+              <h3 class="font-display text-xs sm:text-sm tracking-[0.18em] text-olive uppercase font-semibold">
+                Madrina de Misa y Salud
+              </h3>
+              <p class="font-serif italic font-semibold text-lg sm:text-xl text-navy mt-2">Dayana Juana Mamani Acho</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. CRONOGRAMA DE NUESTRA BODA -->
+        <section class="my-14 pt-10 border-t border-gold/30 revelar">
+          <div class="text-center mb-10">
+            <p class="font-display text-xs sm:text-sm tracking-[0.25em] text-olive uppercase">Nuestro Gran Día</p>
+            <h2 class="font-script text-6xl sm:text-7xl text-olive mt-1">Cronograma</h2>
+            <p class="font-display text-xs sm:text-sm tracking-[0.2em] text-gold uppercase mt-1">De Nuestra Boda</p>
+          </div>
+
+          <div class="timeline-line space-y-6 text-left max-w-xl mx-auto">
+            <div class="flex items-start gap-4 sm:gap-6 p-3 rounded-xl hover:bg-ivory/80 transition revelar">
+              <div class="w-16 sm:w-20 text-right shrink-0 pt-0.5">
+                <span class="font-serif font-bold text-lg sm:text-xl text-olive">15:00</span>
+              </div>
+              <div class="w-4 flex justify-center pt-1.5 z-10 text-gold text-sm">♥</div>
+              <div class="flex-1">
+                <h4 class="font-serif font-bold text-lg sm:text-xl text-navy">⛪ Ceremonia religiosa</h4>
+                <p class="font-serif text-base text-olive/80">Parroquia La Recoleta.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4 sm:gap-6 p-3 rounded-xl hover:bg-ivory/80 transition revelar">
+              <div class="w-16 sm:w-20 text-right shrink-0 pt-0.5">
+                <span class="font-serif font-bold text-lg sm:text-xl text-olive">18:30</span>
+              </div>
+              <div class="w-4 flex justify-center pt-1.5 z-10 text-gold text-sm">♥</div>
+              <div class="flex-1">
+                <h4 class="font-serif font-bold text-lg sm:text-xl text-navy">🥂 Recepción de invitados</h4>
+                <p class="font-serif text-base text-olive/80">Llegada al salón y acomodación de los invitados.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4 sm:gap-6 p-3 rounded-xl hover:bg-ivory/80 transition revelar">
+              <div class="w-16 sm:w-20 text-right shrink-0 pt-0.5">
+                <span class="font-serif font-bold text-lg sm:text-xl text-olive">19:00</span>
+              </div>
+              <div class="w-4 flex justify-center pt-1.5 z-10 text-gold text-sm">♥</div>
+              <div class="flex-1">
+                <h4 class="font-serif font-bold text-lg sm:text-xl text-navy">👰🤵 Entrada de los novios</h4>
+                <p class="font-serif text-base text-olive/80">Ingreso al salón con música especial.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4 sm:gap-6 p-3 rounded-xl hover:bg-ivory/80 transition revelar">
+              <div class="w-16 sm:w-20 text-right shrink-0 pt-0.5">
+                <span class="font-serif font-bold text-lg sm:text-xl text-olive">20:00</span>
+              </div>
+              <div class="w-4 flex justify-center pt-1.5 z-10 text-gold text-sm">♥</div>
+              <div class="flex-1">
+                <h4 class="font-serif font-bold text-lg sm:text-xl text-navy">🍸 Barra libre sin límite</h4>
+                <p class="font-serif text-base text-olive/80">Bebidas y cocteles para todos los invitados.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4 sm:gap-6 p-3 rounded-xl hover:bg-ivory/80 transition revelar">
+              <div class="w-16 sm:w-20 text-right shrink-0 pt-0.5">
+                <span class="font-serif font-bold text-lg sm:text-xl text-olive">21:00</span>
+              </div>
+              <div class="w-4 flex justify-center pt-1.5 z-10 text-gold text-sm">♥</div>
+              <div class="flex-1">
+                <h4 class="font-serif font-bold text-lg sm:text-xl text-navy">🍽️ Cena</h4>
+                <p class="font-serif text-base text-olive/80">Servicio de la cena para los invitados.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4 sm:gap-6 p-3 rounded-xl hover:bg-ivory/80 transition revelar">
+              <div class="w-16 sm:w-20 text-right shrink-0 pt-0.5">
+                <span class="font-serif font-bold text-lg sm:text-xl text-olive">21:30</span>
+              </div>
+              <div class="w-4 flex justify-center pt-1.5 z-10 text-gold text-sm">♥</div>
+              <div class="flex-1">
+                <h4 class="font-serif font-bold text-lg sm:text-xl text-navy">🎁 Entrega de regalos</h4>
+                <p class="font-serif text-base text-olive/80">A elección del invitado.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4 sm:gap-6 p-3 rounded-xl hover:bg-ivory/80 transition revelar">
+              <div class="w-16 sm:w-20 text-right shrink-0 pt-0.5">
+                <span class="font-serif font-bold text-lg sm:text-xl text-olive">22:00</span>
+              </div>
+              <div class="w-4 flex justify-center pt-1.5 z-10 text-gold text-sm">♥</div>
+              <div class="flex-1">
+                <h4 class="font-serif font-bold text-lg sm:text-xl text-navy">🎶 Fiesta</h4>
+                <p class="font-serif text-base text-olive/80">Música, diversión y una gran celebración.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4 sm:gap-6 p-3 rounded-xl hover:bg-ivory/80 transition revelar">
+              <div class="w-16 sm:w-20 text-right shrink-0 pt-0.5">
+                <span class="font-serif font-bold text-lg sm:text-xl text-olive">00:00</span>
+              </div>
+              <div class="w-4 flex justify-center pt-1.5 z-10 text-gold text-sm">♥</div>
+              <div class="flex-1">
+                <h4 class="font-serif font-bold text-lg sm:text-xl text-navy">🎂 Corte de la torta</h4>
+                <p class="font-serif text-base text-olive/80">Un momento dulce para compartir.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-4 sm:gap-6 p-3 rounded-xl hover:bg-ivory/80 transition revelar">
+              <div class="w-16 sm:w-20 text-right shrink-0 pt-0.5">
+                <span class="font-serif font-bold text-lg sm:text-xl text-olive">03:00</span>
+              </div>
+              <div class="w-4 flex justify-center pt-1.5 z-10 text-gold text-sm">♥</div>
+              <div class="flex-1">
+                <h4 class="font-serif font-bold text-lg sm:text-xl text-navy">🚗 Final de la fiesta</h4>
+                <p class="font-serif text-base text-olive/80">Despedida de los recién casados.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. CONFIRMACIÓN DE ASISTENCIA DIRECTA (RSVP POR WHATSAPP) -->
+        <section class="my-12 p-6 sm:p-10 bg-ivory border border-gold/40 rounded-2xl text-center shadow-sm revelar max-w-xl mx-auto">
+          <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-gold/15 flex items-center justify-center text-gold text-xl">💌</div>
+          <h3 class="font-display text-sm sm:text-base tracking-[0.22em] text-navy uppercase font-bold">Confirmar Asistencia</h3>
+          <p class="font-serif italic text-lg text-olive mt-2">
+            Tu presencia es el mejor regalo en este día tan especial. Por favor ingresa tu nombre y apellido para confirmar:
+          </p>
+
+          <form onsubmit="enviarWhatsApp(event)" class="mt-5 space-y-4">
+            <div>
+              <input type="text" id="nombreInvitado" required placeholder="Escribe tu Nombre y Apellido"
+                     class="w-full px-4 py-3.5 bg-white border border-gold/50 rounded-xl font-serif text-lg text-center focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20">
+            </div>
+            <button type="submit"
+                    class="w-full py-4 bg-olive hover:bg-olive-light text-white font-display text-xs sm:text-sm tracking-[0.2em] uppercase rounded-full shadow-lg transition transform hover:scale-[1.01] active:scale-95 cursor-pointer">
+              Enviar Confirmación por WhatsApp
+            </button>
+          </form>
+        </section>
+
+        <!-- 8. CIERRE -->
+        <footer class="text-center mt-14 pt-6 revelar">
+          <div class="text-gold text-base mb-2">♥</div>
+          <p class="font-script text-4xl sm:text-5xl text-gold">
+            Con este motivo, agradecen su gentil asistencia.
+          </p>
+          <p class="font-serif italic text-xl text-olive mt-2">
+            ¡Gracias por ser parte de este momento tan especial!
+          </p>
+          <p class="font-display text-xs sm:text-sm tracking-[0.25em] text-olive uppercase mt-5">
+            Sucre, Diciembre del 2026
+          </p>
+        </footer>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const audio = document.getElementById('musica-fondo');
+    const btnMusica = document.getElementById('btn-musica');
+    const iconoMusica = document.getElementById('icono-musica');
+    let sonando = false;
+
+    // 1. Abrir sobre tipo puertas + destellos dorados + música
+    function abrirSobre() {
+      const overlay = document.getElementById('sobre-overlay');
+      const cuerpo = document.getElementById('cuerpo');
+
+      overlay.classList.add('sobre-abierto');
+      cuerpo.classList.remove('overflow-hidden');
+
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 70,
+          spread: 85,
+          origin: { y: 0.55 },
+          colors: ['#B88A44', '#E5C687', '#FFFFFF', '#4A5D45']
+        });
+      }
+
+      audio.volume = 0.45;
+      audio.play().then(() => {
+        sonando = true;
+        btnMusica.classList.remove('hidden');
+      }).catch(() => {
+        btnMusica.classList.remove('hidden');
+        iconoMusica.classList.remove('girando');
+      });
+
+      setTimeout(() => {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          overlay.style.display = 'none';
+        }, 650);
+      }, 900);
+    }
+
+    // Control de música flotante
+    function toggleMusica() {
+      if (sonando) {
+        audio.pause();
+        iconoMusica.classList.remove('girando');
+        sonando = false;
+      } else {
+        audio.play();
+        iconoMusica.classList.add('girando');
+        sonando = true;
+      }
+    }
+
+    // 2. Animación al hacer scroll
+    const observador = new IntersectionObserver((entradas) => {
+      entradas.forEach((entrada) => {
+        if (entrada.isIntersecting) {
+          entrada.target.classList.add('activo');
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.revelar').forEach((el) => observador.observe(el));
+
+    // 3. Cuenta regresiva hacia el 12 de diciembre de 2026 a las 15:00 (Hora de Bolivia UTC-4)
+    const fechaBoda = new Date('2026-12-12T15:00:00-04:00').getTime();
+
+    function actualizarContador() {
+      const ahora = new Date().getTime();
+      const distancia = fechaBoda - ahora;
+
+      if (distancia <= 0) {
+        document.getElementById('countdown').innerHTML = '<p class="col-span-4 font-script text-4xl text-gold">¡Hoy es el gran día!</p>';
+        return;
+      }
+
+      const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
+      const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+      const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
+
+      document.getElementById('dias').innerText = String(dias).padStart(2, '0');
+      document.getElementById('horas').innerText = String(horas).padStart(2, '0');
+      document.getElementById('minutos').innerText = String(minutos).padStart(2, '0');
+      document.getElementById('segundos').innerText = String(segundos).padStart(2, '0');
+    }
+
+    setInterval(actualizarContador, 1000);
+    actualizarContador();
+
+    // 4. Confirmación directa por WhatsApp (74412144)
+    function enviarWhatsApp(e) {
+      e.preventDefault();
+      const nombre = document.getElementById('nombreInvitado').value.trim();
+      const telefonoNovios = '59174412144';
+
+      const mensaje = `Hola Fidel y Daniela, soy *${nombre}*. Muchas gracias por la invitación, con mucha alegría confirmo mi asistencia a su boda este 12 de diciembre. ¡Nos vemos ahí!`;
+      const url = `https://wa.me/${telefonoNovios}?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, '_blank');
+    }
+  </script>
+</body>
+</html>
