@@ -185,7 +185,8 @@
 </head>
 <body class="antialiased selection:bg-terracotta/20 overflow-hidden" id="cuerpo">
 
-  <audio id="musica-fondo" loop preload="auto">
+  <!-- AUDIO OPTIMIZADO CON PLAYSINLINE PARA MÓVILES -->
+  <audio id="musica-fondo" loop preload="auto" playsinline>
     <source src="musica.mp3" type="audio/mpeg">
   </audio>
 
@@ -555,35 +556,35 @@
         </div>
 
         <div id="carruselHistoria" class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 no-scrollbar px-4 scroll-smooth">
-          <!-- h1.jpg -->
+          <!-- h1.jpeg -->
           <div class="snap-center shrink-0 w-[85%] sm:w-[400px] cursor-pointer" onclick="verFoto('h1.jpeg')">
             <div class="bg-white p-3 rounded-2xl border border-terracotta/20 shadow-sm h-full">
               <img src="h1.jpeg" class="w-full h-64 sm:h-80 object-cover rounded-xl" alt="Historia 1">
               <p class="font-serif italic text-center text-olive mt-3">El inicio de todo</p>
             </div>
           </div>
-          <!-- h2.jpg -->
+          <!-- h2.jpeg -->
           <div class="snap-center shrink-0 w-[85%] sm:w-[400px] cursor-pointer" onclick="verFoto('h2.jpeg')">
             <div class="bg-white p-3 rounded-2xl border border-terracotta/20 shadow-sm h-full">
               <img src="h2.jpeg" class="w-full h-64 sm:h-80 object-cover rounded-xl" alt="Historia 2">
               <p class="font-serif italic text-center text-olive mt-3">Momentos inolvidables</p>
             </div>
           </div>
-          <!-- h3.jpg -->
+          <!-- h3.jpeg -->
           <div class="snap-center shrink-0 w-[85%] sm:w-[400px] cursor-pointer" onclick="verFoto('h3.jpeg')">
             <div class="bg-white p-3 rounded-2xl border border-terracotta/20 shadow-sm h-full">
               <img src="h3.jpeg" class="w-full h-64 sm:h-80 object-cover rounded-xl" alt="Historia 3">
               <p class="font-serif italic text-center text-olive mt-3">Creciendo juntos</p>
             </div>
           </div>
-          <!-- h4.jpg -->
+          <!-- h4.jpeg -->
           <div class="snap-center shrink-0 w-[85%] sm:w-[400px] cursor-pointer" onclick="verFoto('h4.jpeg')">
             <div class="bg-white p-3 rounded-2xl border border-terracotta/20 shadow-sm h-full">
               <img src="h4.jpeg" class="w-full h-64 sm:h-80 object-cover rounded-xl" alt="Historia 4">
               <p class="font-serif italic text-center text-olive mt-3">Caminos que se unen</p>
             </div>
           </div>
-          <!-- h5.jpg -->
+          <!-- h5.jpeg -->
           <div class="snap-center shrink-0 w-[85%] sm:w-[400px] cursor-pointer" onclick="verFoto('h5.jpeg')">
             <div class="bg-white p-3 rounded-2xl border border-terracotta/20 shadow-sm h-full">
               <img src="h5.jpeg" class="w-full h-64 sm:h-80 object-cover rounded-xl" alt="Historia 5">
@@ -635,7 +636,7 @@
                    class="w-full px-4 py-3 bg-linen/80 border border-terracotta/40 rounded-xl font-serif text-lg text-center focus:outline-none focus:border-terracotta">
           </div>
           
-          <!-- NUEVO CAMPO: CANTIDAD DE PERSONAS -->
+          <!-- CAMPO DE CANTIDAD DE PERSONAS (MÁXIMO 2) -->
           <div>
             <select id="cantidadPersonas" required
                     class="w-full px-4 py-3 bg-linen/80 border border-terracotta/40 rounded-xl font-serif text-lg text-center focus:outline-none focus:border-terracotta cursor-pointer text-olive">
@@ -703,6 +704,9 @@
 
     let sonando = false;
 
+    // Forzar la precarga del audio ni bien carga la página
+    audio.load();
+
     function actualizarEstadoReproductor(reproduciendo) {
       sonando = reproduciendo;
       if (sonando) {
@@ -721,10 +725,22 @@
       const overlay = document.getElementById('sobre-overlay');
       const cuerpo = document.getElementById('cuerpo');
 
+      // === OPTIMIZACIÓN DE AUDIO ===
+      // Se le da play inmediatamente al hacer clic para que el navegador no lo bloquee
+      audio.volume = 0.5;
+      audio.play().then(() => {
+        actualizarEstadoReproductor(true);
+      }).catch((error) => {
+        console.log("El navegador bloqueó el audio inicial, esperando interacción extra.");
+        btnMusica.classList.remove('hidden');
+        actualizarEstadoReproductor(false);
+      });
+
+      // Luego se hacen las animaciones visuales
       overlay.classList.add('sobre-abierto');
       cuerpo.classList.remove('overflow-hidden');
 
-      // === CORRECCIÓN PARA QUE LA PÁGINA INICIE ARRIBA AL ABRIR EL SOBRE ===
+      // Forzar inicio arriba
       window.scrollTo(0, 0);
 
       if (typeof confetti === 'function') {
@@ -735,14 +751,6 @@
           colors: ['#C06B3E', '#7A232E', '#D98A63', '#E5C687']
         });
       }
-
-      audio.volume = 0.5;
-      audio.play().then(() => {
-        actualizarEstadoReproductor(true);
-      }).catch(() => {
-        btnMusica.classList.remove('hidden');
-        actualizarEstadoReproductor(false);
-      });
 
       setTimeout(() => {
         overlay.style.opacity = '0';
