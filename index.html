@@ -621,12 +621,12 @@
         </div>
       </section>
 
-      <!-- 11. CONFIRMACIÓN DE ASISTENCIA DIRECTA -->
+      <!-- 11. CONFIRMACIÓN DE ASISTENCIA DIRECTA (ACTUALIZADO CON OPCIÓN DE 1 O 2 PERSONAS) -->
       <section class="my-12 p-6 sm:p-10 bg-white/85 backdrop-blur-xs border border-terracotta/35 rounded-2xl text-center shadow-xs revelar max-w-lg mx-auto">
         <div class="text-3xl mb-2">☎️</div>
         <h3 class="font-script text-5xl text-terracotta">Confirmar Asistencia</h3>
         <p class="font-serif text-lg text-olive mt-3 leading-relaxed">
-          Verte ahí es muy valioso para nosotros, por eso te pedimos confirmar tu asistencia ingresando tu nombre y apellido:
+          Verte ahí es muy valioso para nosotros, por eso te pedimos confirmar tu asistencia ingresando tu nombre y cuántas personas te acompañarán:
         </p>
 
         <form onsubmit="enviarWhatsApp(event)" class="mt-5 space-y-4">
@@ -634,6 +634,17 @@
             <input type="text" id="nombreInvitado" required placeholder="Escribe tu Nombre y Apellido"
                    class="w-full px-4 py-3 bg-linen/80 border border-terracotta/40 rounded-xl font-serif text-lg text-center focus:outline-none focus:border-terracotta">
           </div>
+          
+          <!-- NUEVO CAMPO: CANTIDAD DE PERSONAS -->
+          <div>
+            <select id="cantidadPersonas" required
+                    class="w-full px-4 py-3 bg-linen/80 border border-terracotta/40 rounded-xl font-serif text-lg text-center focus:outline-none focus:border-terracotta cursor-pointer text-olive">
+              <option value="" disabled selected>¿Cuántas personas asistirán? (Máx. 2)</option>
+              <option value="1">Solo yo (1 persona)</option>
+              <option value="2">Yo y mi acompañante (2 personas)</option>
+            </select>
+          </div>
+
           <button type="submit"
                   class="w-full py-3.5 bg-terracotta hover:bg-burgundy text-white font-display text-xs sm:text-sm tracking-[0.2em] uppercase rounded-full shadow-md transition transform hover:scale-[1.01] active:scale-95 cursor-pointer">
             Confirmar por WhatsApp
@@ -804,12 +815,18 @@
     setInterval(actualizarContador, 1000);
     actualizarContador();
 
+    // === FUNCIÓN ACTUALIZADA PARA ENVIAR WHATSAPP CON LA CANTIDAD DE PERSONAS ===
     function enviarWhatsApp(e) {
       e.preventDefault();
       const nombre = document.getElementById('nombreInvitado').value.trim();
+      const cantidad = document.getElementById('cantidadPersonas').value;
       const telefonoNovios = '59174412144';
 
-      const mensaje = `Hola Fidel y Daniela, soy *${nombre}*. Muchas gracias por la invitación, con mucha alegría confirmo mi asistencia a su boda este 12 de diciembre. ¡Nos vemos ahí!`;
+      // Redactar el mensaje dinámicamente según la cantidad
+      let textoPersonas = cantidad === '1' ? '1 persona (solo yo)' : '2 personas (yo y mi acompañante)';
+      
+      const mensaje = `Hola Fidel y Daniela, soy *${nombre}*. Muchas gracias por la invitación, con mucha alegría confirmo mi asistencia a su boda este 12 de diciembre. Asistiremos *${textoPersonas}*. ¡Nos vemos ahí!`;
+      
       const url = `https://wa.me/${telefonoNovios}?text=${encodeURIComponent(mensaje)}`;
       window.open(url, '_blank');
     }
